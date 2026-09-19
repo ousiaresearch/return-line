@@ -1,0 +1,17 @@
+{
+  "agent_dir": "~/.hermes/agents/your-agent",
+  "record_dir": "~/agent-record",
+  "journal_db": "",
+  "session_db": "~/.hermes/state.db",
+  "record_globs": [
+    "texts/*.md",
+    "dreams/*.md",
+    "Story/*.md"
+  ],
+  "self_names": [
+    "your-agent"
+  ],
+  "max_state_chars": 1100,
+  "max_record_chars": 900,
+  "max_record_hits": 4
+}
