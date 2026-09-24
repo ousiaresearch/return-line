@@ -13,7 +13,14 @@ from pathlib import Path
 
 KIT = Path(__file__).resolve().parent.parent
 PLUG = KIT / "return-line"
-MIND_KIT = KIT.parent / "ousia-mind-kit"
+# The mind kit this companion reads: the generator that folds the per-subsystem state files into
+# brain-state.json. The sibling directory is named for whichever release of that repo you cloned
+# (it shipped as `ousia-mind-kit` and ships now as `biomimetic-brain`), so resolve it from the
+# candidates instead of assuming one name.
+MIND_KIT_CANDIDATES = ("ousia-mind-kit", "biomimetic-brain")
+MIND_KIT = next((KIT.parent / n for n in MIND_KIT_CANDIDATES
+                 if (KIT.parent / n / "scripts/generate-brain-state.py").exists()),
+                KIT.parent / MIND_KIT_CANDIDATES[-1])
 results: list[tuple[bool, str]] = []
 
 
@@ -53,6 +60,9 @@ def build_agent(tmp: Path) -> Path:
                        env={**os.environ, "MIND_AGENT_DIR": str(agent)},
                        capture_output=True, text=True, timeout=120)
     if not (agent / "brain-state.json").exists():   # mind kit absent: a minimal honest state
+        print("  NOTE  the mind kit (scripts/generate-brain-state.py) was not found beside this repo;")
+        print("        the state block below was exercised against the stub aggregate written here,")
+        print("        not against a generated one. The retrieval and ledger halves are unaffected.")
         (agent / "brain-state.json").write_text(json.dumps({
             "timestamp": "2026-01-01T00:00:00+00:00",
             "health_summary": {"healthy": 2, "total": 2},
@@ -144,7 +154,10 @@ def main() -> int:
                              user_message="hello", assistant_response="present.")
         check(len(ledger.read_text().splitlines()) == 2, "a repeated turn id is not double-written")
 
-        # 6. the shipped source carries no residue from the tree it came from
+        # 6. the shipped source carries no residue from the tree it came from. Two honest halves:
+        #    absolute home paths (always checkable), and the names THIS kit was told about — the
+        #    example config's self_names. A name the test was never given cannot be caught here;
+        #    that is why the plugin reads every name from config rather than carrying one.
         blob = "\n".join(p.read_text(errors="replace") for p in PLUG.glob("*.py"))
         names = []
         if cfg.exists():
@@ -152,9 +165,9 @@ def main() -> int:
                 names = json.loads(cfg.read_text()).get("self_names") or []
             except Exception:
                 names = []
-        leak = leaked_identity(blob, [])
+        leak = leaked_identity(blob, names)
         check(leak is None,
-              f"shipped plugin source carries no identity residue{'' if leak is None else f' ({leak})'}")
+              f"shipped plugin source carries no home paths and no configured name{'' if leak is None else f' ({leak})'}")
         check(all(not n or n.lower() not in blob.lower() for n in names),
               "the configured agent name is not baked into the source")
     finally:

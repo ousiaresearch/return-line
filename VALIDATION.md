@@ -42,7 +42,7 @@ Expected on a healthy tree:
 | Ledger one line per turn | Write-back that drops turns, or writes the draft rather than the reply |
 | Silence token recorded as silence | The one signal you cannot reconstruct later from the record itself |
 | Repeated turn id not re-written | Duplicate ledger rows inflating whatever reads them |
-| No identity residue in source | An identity-coupled copy going out under someone else's name |
+| Shipped source carries no home paths and no configured name | An identity-coupled copy going out under someone else's name — with the limit stated in the test itself: a name it was never told about cannot be caught by it, which is why the plugin reads every name from config |
 
 ## Checks worth running once by hand
 
@@ -53,3 +53,13 @@ Expected on a healthy tree:
 ## What a passing test does not prove
 
 That retrieval is *good*. The test asserts the machinery moves; it cannot tell you whether the excerpts the retriever chose were the right ones. That judgement lives in the ledger — see `SETUP-GUIDE.md` §5.
+
+## Integrity manifest
+
+`SHA256SUMS` covers every tracked file in this repository **except itself** — a file cannot carry a hash of its own bytes, and an earlier revision of this file published one anyway, which made `shasum -a 256 -c SHA256SUMS` exit non-zero on a perfectly good tree. Verify with:
+
+```bash
+shasum -a 256 -c SHA256SUMS
+```
+
+Every line must read `OK`; a failure means the bytes you have are not the bytes that were published, and the two defects this repository has had — the self-line above, and a `SETUP-GUIDE.md` stage that `cd`-ed into a directory that does not exist — were both found by running the published commands rather than by reading them.

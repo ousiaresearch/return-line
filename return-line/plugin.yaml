@@ -1,7 +1,7 @@
 name: return-line
-version: 1.0.0
+version: 1.1.0
 description: "Carry the agent's own state, and its own retrieved record, into every live turn. Appends to the current user message at API time, never the system prompt and never past turns, so per-conversation prompt caching is untouched. Companion to the Ousia Mind Kit: the mind kit produces the aggregate, this makes sure the conversation reads it."
 author: "Ousia Research"
-hooks:
+provides_hooks:
   - pre_llm_call
   - post_llm_call

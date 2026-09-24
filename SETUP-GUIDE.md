@@ -17,7 +17,7 @@ The plugin reads two things: your agent's state file, and its own record. Both a
 ## 1. Prerequisites
 
 - Hermes with plugin support (`~/.hermes/plugins/`).
-- Optional but recommended: **The Copper Observatory** (`ousia-mind-kit`) installed first, so `brain-state.json` exists. Without it the state block simply returns empty.
+- Optional but recommended: **the mind kit** ([`biomimetic-brain`](https://github.com/ousiaresearch/biomimetic-brain), shipped earlier as `ousia-mind-kit`) installed first, so `brain-state.json` exists. Without it the state block simply returns empty, and the self-test says so in a `NOTE` line rather than passing silently.
 - The host interpreter needs `sqlite3` (stdlib) and, for the vector half of retrieval, `numpy` and `scikit-learn`. If those are missing, search still works lexically; the kit does not fail.
 
 ---
@@ -48,10 +48,10 @@ Environment variables override the file (`RETURN_LINE_AGENT_DIR`, `RETURN_LINE_R
 ## 3. Prove it before you trust it
 
 ```bash
-cd ousia-return-line-kit && python3 scripts/self_test.py
+cd return-line && python3 scripts/self_test.py
 ```
 
-Expect 13/13. The test builds a neutral agent from scratch — its own state, record and journal — and checks that state reaches the turn, the record is searchable, and the ledger records both a reply and a silence token. It restores your `config.json` afterwards.
+Expect 14/14. The test builds a neutral agent from scratch — its own state, record and journal — and checks that state reaches the turn, the record is searchable, and the ledger records both a reply and a silence token. It restores your `config.json` afterwards.
 
 ---
 
